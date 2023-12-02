@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/glokta1/aoc-2023/cio"
 )
@@ -13,13 +14,26 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for _, line := range lines {
-		for l, r := 0, len(line)-1; l <= r; l = l + 1 {
-			if line[l] >= '0' && line[l] <= '9' {
-				fmt.Printf("Found number! %c", line[l])
+	sum := 0
+	for i, line := range lines {
+		cnt, first, last := 0, string(line[0]), string(line[0])
+		for _, char := range line {
+			if char >= '0' && char <= '9' {
+				cnt++
+				if cnt == 1 {
+					first = string(char)
+				}
+
+				last = string(char)
 			}
 		}
-		fmt.Println()
+
+		res, _ := strconv.Atoi(first + last)
+		sum += res
+
+		fmt.Println(i, first, last, sum)
 	}
+
+	fmt.Println(sum)
 
 }
