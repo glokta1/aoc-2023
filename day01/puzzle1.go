@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/glokta1/aoc-2023/cio"
+	aoc "github.com/glokta1/aoc-2023/internal"
 )
 
 var m = map[string]string{
@@ -32,7 +32,7 @@ func getMapKeys(m map[string]string) []string {
 }
 
 func generateRegexPattern() string {
-	pattern := "?=\\d"
+	pattern := "\\d"
 	nums := getMapKeys(m)
 	for _, numString := range nums {
 		pattern += fmt.Sprintf("|%s", numString)
@@ -43,7 +43,8 @@ func generateRegexPattern() string {
 
 func main() {
 	patternString := generateRegexPattern()
-	lines, err := cio.ReadLines("input.txt")
+	fmt.Println(patternString)
+	lines, err := aoc.ReadLines("input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,12 +52,12 @@ func main() {
 	sum := 0
 	for idx, line := range lines {
 		fmt.Println(idx, line)
-		pattern, err := regexp.Compile(patternString)
+		re, err := regexp.Compile(patternString)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		matches := pattern.FindAllString(line, -1)
+		matches := re.FindAllString(line, -1)
 		first, last := matches[0], matches[len(matches)-1]
 		if val, ok := m[first]; ok {
 			first = val

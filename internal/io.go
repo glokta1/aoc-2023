@@ -1,4 +1,4 @@
-package cio
+package aoc
 
 import (
 	"os"
