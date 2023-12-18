@@ -2,78 +2,63 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"regexp"
-	"strconv"
+	"strings"
+	"unicode"
 
 	aoc "github.com/glokta1/aoc-2023/internal"
 )
 
-var m = map[string]string{
-	"one":   "1",
-	"two":   "2",
-	"three": "3",
-	"four":  "4",
-	"five":  "5",
-	"six":   "6",
-	"seven": "7",
-	"eight": "8",
-	"nine":  "9",
-	"zero":  "0",
+var m = map[string]int{
+	"one":   1,
+	"two":   2,
+	"three": 3,
+	"four":  4,
+	"five":  5,
+	"six":   6,
+	"seven": 7,
+	"eight": 8,
+	"nine":  9,
+	"zero":  0,
 }
 
-func getMapKeys(m map[string]string) []string {
-	keys := make([]string, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
+// iterate through string
+// if digit, store in a var, continue
+// else check if substring starting from current position contains one of the "number words" and store its integer mapping in a var
+func findNumbersInString(s string) int {
+	cnt := 0
+	var first, last int
+	for i, ch := range s {
+		if unicode.IsDigit(ch) {
+			if cnt == 0 {
+				// convert rune digit to int value
+				// NOTE: plain ch - '0' gives me the rune representation, need to explicitly convert
+				first = int(ch - '0')
+				cnt++
+			}
+			last = int(ch - '0')
+		}
+
+		for k, v := range m {
+			if strings.HasPrefix(s[i:], k) {
+				if cnt == 0 {
+					first = v
+					cnt++
+				}
+
+				last = v
+			}
+		}
 	}
 
-	return keys
-}
-
-func generateRegexPattern() string {
-	pattern := "\\d"
-	nums := getMapKeys(m)
-	for _, numString := range nums {
-		pattern += fmt.Sprintf("|%s", numString)
-	}
-
-	return pattern
+	return first*10 + last
 }
 
 func main() {
-	patternString := generateRegexPattern()
-	fmt.Println(patternString)
-	lines, err := aoc.ReadLines("input.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	sum := 0
-	for idx, line := range lines {
-		fmt.Println(idx, line)
-		re, err := regexp.Compile(patternString)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		matches := re.FindAllString(line, -1)
-		first, last := matches[0], matches[len(matches)-1]
-		if val, ok := m[first]; ok {
-			first = val
-		}
-		if val, ok := m[last]; ok {
-			last = val
-		}
-
-		res, err := strconv.Atoi(first + last)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		sum += res
-		fmt.Println(first, last, res, sum)
+	for i, line := range aoc.ReadLines("input.txt") {
+		fmt.Println(i, line)
+		sum += findNumbersInString(line)
 	}
 
-	// fmt.Println(sum)
+	fmt.Println("sum: ", sum)
 }
